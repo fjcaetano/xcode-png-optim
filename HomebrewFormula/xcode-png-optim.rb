@@ -3,7 +3,7 @@ class XcodePngOptim < Formula
   desc "Scans an Xcode target for PNGs and converts all to optimized JPEGs"
   homepage "https://github.com/fjcaetano/xcode-png-optim"
   url "https://codeload.github.com/fjcaetano/xcode-png-optim/tar.gz/#{version}"
-  sha256 ""
+  sha256 "e726aeb57c275ad8cd137b3ec057768ecbdfb7810fa595138bd56e6e972a1804"
 
   depends_on "imagemagick"
   depends_on "jpegoptim"
