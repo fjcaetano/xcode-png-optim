@@ -47,6 +47,7 @@ $ xcode-png-optim [options] {dir_name}
 | -x, --no-xcode-log       | Do not format output for Xcode. When this is set, the output will include ANSI colors | N/A |
 | -c, --no-update-contents | Do not update Content.json files  |      N/A      |
 | -i, --ignore-cache       | Ignores the cached files          |      N/A      |
+| -f, --force              | Forces the convertion, overwriting existing files | N/A |
 | -h, --help               | Prints helper message             |      N/A      |
 | -v, --version            | Prints current version            |      N/A      |
 

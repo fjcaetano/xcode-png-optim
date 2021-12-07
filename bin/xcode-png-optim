@@ -8,6 +8,7 @@
 PKG_VERSION="${ENV_VERSION}"
 YELLOW="\033[1;33m"
 GREEN="\033[1;32m"
+RED="\033[1;31m"
 CLEAR="\033[0m"
 
 ################
@@ -33,20 +34,23 @@ main() {
     FILE_DIR="$(dirname $FILE)"
     FILE_NAME="$(basename $FILE .png)"
 
-    PNG_FILE="$FILE_DIR/$FILE_NAME.png"
-
-    if ! check_alpha "$PNG_FILE"; then
+    if ! check_alpha "$FILE"; then
       echo "$FILE" >> "$CACHE_FILE"
       log note "Skipping due to transparency -"
       continue
     fi
 
+    JPEG_FILE="$FILE_DIR/$FILE_NAME.jpeg"
+    if [ -f "$JPEG_FILE" ] && [[ "$FORCE" == "0" ]]; then
+      log error "JPEG file already exists -"
+      exit 2
+    fi
+
     log warning "Converting -"
 
     # Convert from PNG to JPEG
-    JPEG_FILE="$FILE_DIR/$FILE_NAME.jpeg"
-    sips -s format jpeg "$PNG_FILE" --out "$JPEG_FILE" &> /dev/null
-    rm "$PNG_FILE"
+    sips -s format jpeg "$FILE" --out "$JPEG_FILE" &> /dev/null
+    rm "$FILE"
 
     log note "Optimizing -"
 
@@ -125,6 +129,9 @@ log() {
     note)
       local COLOR=$GREEN
       ;;
+    error)
+      local COLOR=$RED
+      ;;
     *)
       local COLOR=""
       ;;
@@ -170,6 +177,10 @@ parse_args() {
       IGNORE_CACHE=1
       shift 1
       ;;
+    -f|--force)
+      FORCE=1
+      shift 1
+      ;;
     *)    # unknown option
       DIR_NAME+=("$1") # save it in an array for later
       shift
@@ -183,6 +194,7 @@ parse_args() {
   XCODE_LOG=${XCODE_LOG-1}
   UPDATE_CONTENTS=${UPDATE_CONTENTS-1}
   IGNORE_CACHE=${IGNORE_CACHE-0}
+  FORCE=${FORCE=0}
   
   if [[ $(bc -l <<< "$ALPHA_TOLERANCE < 0 || $ALPHA_TOLERANCE > 1") == "1" ]] ; then
     log error "Invalid alpha tolerance. Value must be 0...1"
@@ -204,6 +216,7 @@ display_help() {
   echo "  -x, --no-xcode-log          Do not format output for Xcode. When this is set, the output will include ANSI colors"
   echo "  -c, --no-update-contents    Do not update Content.json files"
   echo "  -i, --ignore-cache          Ignores the cached files"
+  echo "  -f, --force                 Forces the convertion, overwriting existing files"
   echo "  -h, --help                  Outputs this help message"
   echo "  -v, --version               Outputs the version number"
   echo
