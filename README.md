@@ -3,7 +3,7 @@
 
 Scans an Xcode target for PNGs and converts all to optimized JPEGs. If an image's directory contains a `Contents.json` file, `xcode-png-optim` understands it's within an `Assets.xcassets` catalog and will update the JSON file accordingly.
 
-By default, `xcode-png-optim` will convert only non-transparent PNGs. If you need to tweak the tolerance level for the alpha channel of each image, use the `--alpha-tolerance` argument. The tolerance must be a value between zero and one, where 0 is no tolerance (e.g. if an image has any transparency at all, it will be ignored) where 1 full tolerance (e.g. all PNGs will be converted, regardless of transparency levels).
+By default, `xcode-png-optim` will convert only non-transparent PNGs. If you need to tweak the tolerance level for the alpha channel of each image, use the `--alpha-tolerance` argument. The tolerance must be a value between zero and one, where 0 is no tolerance (e.g. if an image has any transparency at all, it will be ignored) and 1 is full tolerance (e.g. all PNGs will be converted, regardless of transparency levels).
 
 ## Installation 
 
@@ -46,6 +46,7 @@ $ xcode-png-optim [options] {dir_name}
 | -t, --alpha-tolerance    | The tolerance allowed for the alpha channel. Value must be 0...1 | `0` |
 | -x, --no-xcode-log       | Do not format output for Xcode. When this is set, the output will include ANSI colors | N/A |
 | -c, --no-update-contents | Do not update Content.json files  |      N/A      |
+| -i, --ignore-cache       | Ignores the cached files          |      N/A      |
 | -h, --help               | Prints helper message             |      N/A      |
 | -v, --version            | Prints current version            |      N/A      |
 

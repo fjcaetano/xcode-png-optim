@@ -24,7 +24,7 @@ main() {
   IFS="$(echo -en "\n\b")"
 
   for FILE in $FILE_LIST; do
-    if grep -q "$FILE" "$CACHE_FILE"; then
+    if grep -q "$FILE" "$CACHE_FILE" && [[ "$IGNORE_CACHE" == "0" ]]; then
       # Image already processed
       log note "Image already processed -"
       continue
@@ -66,15 +66,15 @@ main() {
 ###############################
 prep_cache_file() {
   if [ -d "$BUILD_ROOT" ]; then
-    CACHE_FILE="$BUILD_ROOT"
+    local CACHE_DIR="$BUILD_ROOT"
   elif [ -d "$CACHE_ROOT" ]; then
-    CACHE_FILE="$CACHE_ROOT"
+    local CACHE_DIR="$CACHE_ROOT"
   else
-    CACHE_FILE="/usr/local/var/cache"
-    mkdir -p "$(dirname $CACHE_FILE)"
+    local CACHE_DIR="/usr/local/var/cache"
+    mkdir -p "$(dirname $CACHE_DIR)"
   fi
 
-  CACHE_FILE="$CACHE_FILE/image_optim_skipped.cache"
+  CACHE_FILE="$CACHE_DIR/image_optim_skipped.cache"
 
   if [ ! -f $CACHE_FILE ]; then
     touch "$CACHE_FILE"
@@ -166,6 +166,10 @@ parse_args() {
       UPDATE_CONTENTS=0
       shift 1
       ;;
+    -i|--ignore-cache)
+      IGNORE_CACHE=1
+      shift 1
+      ;;
     *)    # unknown option
       DIR_NAME+=("$1") # save it in an array for later
       shift
@@ -178,6 +182,7 @@ parse_args() {
   ALPHA_TOLERANCE=${ALPHA_TOLERANCE-0}
   XCODE_LOG=${XCODE_LOG-1}
   UPDATE_CONTENTS=${UPDATE_CONTENTS-1}
+  IGNORE_CACHE=${IGNORE_CACHE-0}
   
   if [[ $(bc -l <<< "$ALPHA_TOLERANCE < 0 || $ALPHA_TOLERANCE > 1") == "1" ]] ; then
     log error "Invalid alpha tolerance. Value must be 0...1"
@@ -198,6 +203,7 @@ display_help() {
   echo "  -t, --alpha-tolerance       The tolerance allowed for the alpha channel. Value must be 0...1 (default: 0)"
   echo "  -x, --no-xcode-log          Do not format output for Xcode. When this is set, the output will include ANSI colors"
   echo "  -c, --no-update-contents    Do not update Content.json files"
+  echo "  -i, --ignore-cache          Ignores the cached files"
   echo "  -h, --help                  Outputs this help message"
   echo "  -v, --version               Outputs the version number"
   echo
